@@ -1,0 +1,87 @@
+{
+  "name": "system.dawnbreak.vegeta",
+  "position": [
+    20480,
+    540,
+    12288
+  ],
+  "stars": [
+    {
+      "name": "star.dawnbreak.vegeta_sun",
+      "class": "k",
+      "radius": 240,
+      "color": "#FF9A5A"
+    }
+  ],
+  "asteroid_belt": {
+    "radius": 2400,
+    "width": 150
+  },
+  "bodies": [
+    {
+      "id": "vegeta",
+      "type": "arid",
+      "dimension": "dawnbreak:vegeta",
+      "orbit": {
+        "radius": 1500,
+        "phase": 30,
+        "period_minutes": 70
+      },
+      "radius": 150,
+      "atmosphere_radius": 205,
+      "gravity": 2.0,
+      "atmosphere_color": "#FF8A5C",
+      "rotation_minutes": 9,
+      "colors": {
+        "land": "#B5492C",
+        "accent": "#6E2A1A",
+        "ocean": "#4A1A10"
+      }
+    },
+    {
+      "id": "vegeta_moon",
+      "type": "barren",
+      "parent": "vegeta",
+      "orbit": {
+        "radius": 380,
+        "phase": 200,
+        "period_minutes": 11
+      },
+      "radius": 34,
+      "gravity": 0.2
+    },
+    {
+      "id": "vampa",
+      "type": "arid",
+      "orbit": {
+        "radius": 800,
+        "phase": 250,
+        "period_minutes": 35
+      },
+      "radius": 90,
+      "gravity": 1.1,
+      "colors": {
+        "land": "#B8A070",
+        "accent": "#6E5A3A"
+      }
+    },
+    {
+      "id": "vegeta_giant",
+      "type": "gas_giant",
+      "orbit": {
+        "radius": 2050,
+        "phase": 120,
+        "period_minutes": 150
+      },
+      "radius": 250,
+      "rings": true,
+      "tilt": 12,
+      "rotation_minutes": 5,
+      "colors": {
+        "land": "#C87A5A",
+        "ocean": "#F0C8A8",
+        "accent": "#8A3A2A"
+      }
+    }
+  ]
+}

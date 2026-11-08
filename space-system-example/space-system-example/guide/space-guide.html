@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dawnbreak Space Code Guide</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a star-chart notebook. Narrow reading column, lesson numbers in the margin, a contents rail on wide screens. */
+:root {
+  --paper: #eef1f6;
+  --panel: #e2e7f0;
+  --ink: #18233a;
+  --muted: #55627a;
+  --rule: #c5cddb;
+  --star: #c4621f;      /* K-class orange: the accent */
+  --orbit: #2a7473;     /* orbit-line teal: secondary */
+  --code-bg: #f8f9fc;
+  --code-fg: #1d2840;
+  --note-bg: #fbeee3;
+  --warn-bg: #fdeaea;
+  --warn: #a2322d;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1626; --panel: #172036; --ink: #dfe5f1; --muted: #9aa6bd; --rule: #2a3550;
+    --star: #f2a65a; --orbit: #62c4c1; --code-bg: #131c30; --code-fg: #d7deec;
+    --note-bg: #2a2118; --warn-bg: #2d1a1c; --warn: #f08a83; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1626; --panel: #172036; --ink: #dfe5f1; --muted: #9aa6bd; --rule: #2a3550;
+  --star: #f2a65a; --orbit: #62c4c1; --code-bg: #131c30; --code-fg: #d7deec;
+  --note-bg: #2a2118; --warn-bg: #2d1a1c; --warn: #f08a83; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: var(--body); font-size: 17.5px; line-height: 1.62;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 56px; }
+@media (max-width: 900px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; } nav.toc { display: none; } }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; padding-top: 48px; font-family: var(--display); font-size: 14px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+nav.toc a { color: var(--muted); text-decoration: none; display: grid; grid-template-columns: 26px 1fr; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--star); }
+nav.toc .n { font-family: var(--mono); font-size: 12px; padding-top: 2px; }
+main { min-width: 0; max-width: 760px; }
+header.hero { padding-block: 48px 24px; border-bottom: 1px solid var(--rule); margin-bottom: 8px; }
+.eyebrow { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--orbit); }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(34px, 6vw, 52px); line-height: 1.05; margin: 10px 0 14px; text-wrap: balance; letter-spacing: -0.01em; }
+.lede { font-size: 19px; color: var(--muted); max-width: 62ch; margin: 0; }
+section { padding-block: 36px 8px; border-bottom: 1px solid var(--rule); }
+section:last-of-type { border-bottom: 0; }
+h2 { font-family: var(--display); font-weight: 700; font-size: 28px; line-height: 1.15; margin: 0 0 6px; text-wrap: balance; display: flex; gap: 14px; align-items: baseline; }
+h2 .n { font-family: var(--mono); font-weight: 600; font-size: 15px; color: var(--star); min-width: 2.2em; }
+h3 { font-family: var(--display); font-weight: 600; font-size: 19px; margin: 26px 0 4px; }
+p, li { max-width: 66ch; }
+.files { font-family: var(--mono); font-size: 12.5px; color: var(--muted); margin: 0 0 14px; }
+code { font-family: var(--mono); font-size: 0.86em; background: var(--panel); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code-bg); color: var(--code-fg); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.55; margin: 14px 0; }
+pre code { background: none; padding: 0; font-size: inherit; }
+pre .c { color: var(--muted); font-style: italic; }
+pre .k { color: var(--orbit); font-weight: 600; }
+.note, .warn { padding: 12px 16px; border-radius: 8px; margin: 16px 0; max-width: 66ch; }
+.note { background: var(--note-bg); border-left: 3px solid var(--star); }
+.warn { background: var(--warn-bg); border-left: 3px solid var(--warn); }
+.note b, .warn b { font-family: var(--display); }
+.fig { margin: 20px 0; overflow-x: auto; }
+.fig svg { display: block; max-width: 100%; height: auto; }
+.fig figcaption { font-size: 14.5px; color: var(--muted); margin-top: 6px; max-width: 66ch; }
+.svg-ink { fill: var(--ink); } .svg-muted { fill: var(--muted); }
+.svg-line { stroke: var(--rule); } .svg-orbit { stroke: var(--orbit); } .svg-star { fill: var(--star); }
+.svg-box { fill: var(--panel); stroke: var(--rule); }
+.svg-text { font-family: var(--display); font-size: 13px; fill: var(--ink); }
+.svg-small { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+table { border-collapse: collapse; font-size: 15px; margin: 14px 0; }
+.tablewrap { overflow-x: auto; }
+th, td { text-align: left; padding: 7px 12px 7px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--display); font-weight: 600; }
+td code { white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; }
+ol.steps { padding-left: 1.3em; }
+ol.steps li { margin-bottom: 6px; }
+a { color: var(--orbit); }
+a:focus-visible { outline: 2px solid var(--star); outline-offset: 2px; }
+.ex { counter-reset: ex; list-style: none; padding: 0; }
+.ex li { counter-increment: ex; padding-left: 2.2em; position: relative; margin-bottom: 10px; }
+.ex li::before { content: counter(ex); position: absolute; left: 0; top: 1px; font-family: var(--mono); font-size: 13px; color: var(--paper); background: var(--orbit); width: 1.6em; height: 1.6em; border-radius: 50%; display: grid; place-items: center; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<nav class="toc" aria-label="Lessons">
+  <ol>
+    <li><a href="#big-picture"><span class="n">00</span>The big picture</a></li>
+    <li><a href="#space-dimension"><span class="n">01</span>One dimension called space</a></li>
+    <li><a href="#data-model"><span class="n">02</span>Describing a solar system</a></li>
+    <li><a href="#orbits"><span class="n">03</span>Making things orbit</a></li>
+    <li><a href="#procedural"><span class="n">04</span>An infinite galaxy</a></li>
+    <li><a href="#sync"><span class="n">05</span>Loading and syncing</a></li>
+    <li><a href="#planets"><span class="n">06</span>Planets as places</a></li>
+    <li><a href="#transit"><span class="n">07</span>Travel between them</a></li>
+    <li><a href="#physics"><span class="n">08</span>Gravity, air, flight</a></li>
+    <li><a href="#rendering"><span class="n">09</span>Drawing the sky</a></li>
+    <li><a href="#asteroids"><span class="n">10</span>Asteroids</a></li>
+    <li><a href="#recap"><span class="n">11</span>Recap and exercises</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">DMZ: Dawnbreak · source walkthrough</div>
+  <h1>How the space system works</h1>
+  <p class="lede">A guided tour of the code that turns Minecraft into a galaxy: how a solar system is described, how planets move, how an endless galaxy fits in a few kilobytes, how you fly from one world to another, and how the sky is painted. Each lesson builds on the one before.</p>
+</header>
+
+<section id="big-picture">
+  <h2><span class="n">00</span>The big picture</h2>
+  <p>Before any code, hold this picture in your head. Minecraft has <em>dimensions</em>: the Overworld, the Nether, the End. Each is a separate world. Dawnbreak adds one more, called <strong>space</strong>, which is mostly empty air. Every planet you can visit is still its own world (a dimension), but <em>in space you see them all</em>, at their real positions, moving along their orbits.</p>
+  <p>So the space system has to do five jobs. Each job lives in its own part of the code:</p>
+  <figure class="fig">
+    <svg viewBox="0 0 720 300" role="img" aria-label="Five layers: data files feed the galaxy model; server logic and client rendering both read the galaxy model; the network keeps client and server in step.">
+      <rect class="svg-box" x="10" y="20" width="200" height="64" rx="8"/>
+      <text class="svg-text" x="24" y="46">1 · Describe</text>
+      <text class="svg-small" x="24" y="66">JSON systems + generator</text>
+      <rect class="svg-box" x="260" y="20" width="200" height="64" rx="8"/>
+      <text class="svg-text" x="274" y="46">2 · Model</text>
+      <text class="svg-small" x="274" y="66">Galaxy · StarSystem · Body</text>
+      <rect class="svg-box" x="510" y="20" width="200" height="64" rx="8"/>
+      <text class="svg-text" x="524" y="46">3 · Sync</text>
+      <text class="svg-small" x="524" y="66">seed + JSON to clients</text>
+      <rect class="svg-box" x="135" y="190" width="200" height="64" rx="8"/>
+      <text class="svg-text" x="149" y="216">4 · Simulate (server)</text>
+      <text class="svg-small" x="149" y="236">travel · gravity · air</text>
+      <rect class="svg-box" x="385" y="190" width="200" height="64" rx="8"/>
+      <text class="svg-text" x="399" y="216">5 · Draw (client)</text>
+      <text class="svg-small" x="399" y="236">sky · planets · HUD</text>
+      <g class="svg-orbit" stroke-width="2" fill="none">
+        <path d="M210 52 H256"/><path d="M460 52 H506"/>
+        <path d="M330 84 L250 186"/><path d="M390 84 L470 186"/><path d="M610 84 L520 186"/>
+      </g>
+      <g class="svg-star"><path d="M256 47 l8 5 -8 5z"/><path d="M506 47 l8 5 -8 5z"/><path d="M250 186 l-1-10 8 4z"/><path d="M470 186 l-8-4 9-6z"/><path d="M520 186 l1-10 8 6z"/></g>
+      <text class="svg-small" x="10" y="290">Server and client each build the same galaxy model; only a seed and a few JSON files travel between them.</text>
+    </svg>
+  </figure>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Package</th><th>What it holds</th></tr></thead>
+    <tbody>
+      <tr><td><code>galaxy/</code></td><td>The data model and the generator: stars, planets, systems, the galaxy itself.</td></tr>
+      <tr><td><code>space/</code></td><td>Server rules: leaving and entering planets, gravity, running out of air.</td></tr>
+      <tr><td><code>network/</code></td><td>The packets that keep the client's galaxy identical to the server's.</td></tr>
+      <tr><td><code>client/</code> and <code>client/render/</code></td><td>Flight controls, the HUD, the galaxy map and the sky renderer.</td></tr>
+      <tr><td><code>world/</code></td><td>The asteroid generator for the space dimension.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>The one idea to remember.</b> The galaxy is never <em>stored</em> as a big list of planets. It is <em>computed</em> from a seed number whenever someone asks. That single decision explains most of the code you are about to read.</div>
+</section>
+
+<section id="space-dimension">
+  <h2><span class="n">01</span>One dimension called space</h2>
+  <p class="files">data/dawnbreak/dimension/space.json · worldgen/biome/deep_space.json · space/ModDimensions.java</p>
+  <p>A Minecraft dimension is defined in JSON: what kind of world it is and how to generate its terrain. Space uses the simplest generator there is, a "flat" world, with one layer of <em>air</em>. So the world is empty, and every block of it is the <code>deep_space</code> biome, whose only job is to place asteroids.</p>
+<pre><code>{
+  "type": "dawnbreak:space",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "dawnbreak:deep_space",
+      "layers": [ { "block": "minecraft:air", "height": 1 } ],
+      "features": true
+    }
+  }
+}</code></pre>
+  <p>Java code needs a way to refer to these dimensions. That is what <code>ModDimensions</code> is: a list of <em>keys</em>, like name tags, one per dimension.</p>
+<pre><code><span class="k">public static final</span> ResourceKey&lt;Level&gt; SPACE  = key(<span class="k">"space"</span>);
+<span class="k">public static final</span> ResourceKey&lt;Level&gt; VEGETA = key(<span class="k">"vegeta"</span>);
+<span class="c">// Shared worlds for planets without their own dimension (lesson 06).</span>
+<span class="k">public static final</span> List&lt;String&gt; ARCHETYPES = List.of(<span class="k">"verdant"</span>, <span class="k">"oceanic"</span>, <span class="k">"arid"</span>, …);</code></pre>
+  <p>Coordinates in space are ordinary block coordinates, so a star system "at x = 20480, z = 12288" really is twenty thousand blocks from the origin. The galaxy uses Minecraft's own coordinate grid as its map.</p>
+</section>
+
+<section id="data-model">
+  <h2><span class="n">02</span>Describing a solar system</h2>
+  <p class="files">galaxy/Orbit.java · Star.java · Body.java · BodyType.java · StarSystem.java · data/dawnbreak/dawnbreak/systems/*.json</p>
+  <p>Hand-made systems such as Sol or Vegeta are written in JSON. Here is a trimmed version of the Vegeta system:</p>
+<pre><code>{
+  "position": [20480, 540, 12288],
+  "stars": [ { "name": "star.dawnbreak.vegeta_sun", "class": "k", "radius": 240 } ],
+  "bodies": [
+    {
+      "id": "vegeta", "type": "arid", "dimension": "dawnbreak:vegeta",
+      "orbit": { "radius": 1500, "phase": 30, "period_minutes": 70 },
+      "radius": 150, "atmosphere_radius": 205, "gravity": 2.0
+    }
+  ]
+}</code></pre>
+  <p>In Java, each piece of that file becomes a <strong>record</strong>. A record is a small class that just holds values: you list the fields once and Java writes the constructor and getters for you.</p>
+<pre><code><span class="k">public record</span> Orbit(<span class="k">double</span> radius, <span class="k">double</span> phase, <span class="k">double</span> periodTicks, <span class="k">double</span> inclination) { … }
+<span class="k">public record</span> Star(String name, …, StarClass starClass, <span class="k">double</span> radius, <span class="k">int</span> color, Orbit orbit) { … }
+<span class="k">public record</span> Body(ResourceLocation id, …, BodyType type, Optional&lt;ResourceKey&lt;Level&gt;&gt; dimension,
+                   Optional&lt;String&gt; parent, Orbit orbit, <span class="k">double</span> radius, <span class="k">float</span> gravity, …) { … }</code></pre>
+  <h3>Codecs: one object that both reads and writes</h3>
+  <p>How does JSON become a record? Minecraft uses <strong>codecs</strong>. A codec is a description of a data shape. From that one description, the game can read JSON (or NBT, or network bytes) into objects and write objects back out. Here is the orbit codec:</p>
+<pre><code><span class="k">public static final</span> Codec&lt;Orbit&gt; CODEC = RecordCodecBuilder.create(i -&gt; i.group(
+    Codec.doubleRange(0, 1_000_000).fieldOf(<span class="k">"radius"</span>).forGetter(Orbit::radius),
+    Codec.DOUBLE.optionalFieldOf(<span class="k">"phase"</span>, 0.0).forGetter(o -&gt; Math.toDegrees(o.phase())),
+    Codec.doubleRange(0, 1_000_000).optionalFieldOf(<span class="k">"period_minutes"</span>, 0.0).forGetter(o -&gt; o.periodTicks() / 1200.0),
+    …
+).apply(i, (radius, phase, period, incl) -&gt;
+    <span class="k">new</span> Orbit(radius, Math.toRadians(phase), period * 1200.0, Math.toRadians(incl))));</code></pre>
+  <p>Read it line by line. Each <code>fieldOf</code> names a JSON key and its type. <code>optionalFieldOf(…, 0.0)</code> means "if it's missing, use 0". The <code>apply</code> lambda builds the record. Notice the <em>unit conversion</em> happening right at the border:</p>
+  <ul>
+    <li>JSON is written for humans: degrees, and periods in minutes.</li>
+    <li>Code works in maths units: radians, and time in <em>ticks</em>. Minecraft runs 20 ticks a second, so one minute is 1,200 ticks.</li>
+  </ul>
+  <p>Converting once, at the edge, means no other code ever has to wonder which unit it holds. That's a habit worth copying.</p>
+  <h3>Sensible defaults from the body type</h3>
+  <p>A planet file can leave most things out. <code>Body.codec</code> fills the gaps from the planet's <code>BodyType</code>: an arid world defaults to gravity halfway between its type's minimum and maximum, breathable air if its type has it, and an atmosphere 1.4 times its radius.</p>
+<pre><code>atmo.orElse(radius * 1.4),
+gravity.orElse((type.minGravity() + type.maxGravity()) / 2F),
+breathable.orElse(type.breathable()),</code></pre>
+  <p>Another detail: <code>"requires_mod"</code>. A body can say it only exists when another mod is installed. That's how DMZ's own Namek appears only when Dragon Mine Z is present. <code>StarSystem.codec</code> simply filters those bodies out.</p>
+</section>
+
+<section id="orbits">
+  <h2><span class="n">03</span>Making things orbit</h2>
+  <p class="files">galaxy/Orbit.java · StarSystem.java · Galaxy.java</p>
+  <p>Planets move, but nothing in the code ever <em>moves</em> them. There is no position stored that gets updated every tick. Instead, position is a <strong>function of time</strong>: give the orbit a time, and it tells you where the planet is.</p>
+<pre><code><span class="k">public</span> Vec3 offset(<span class="k">double</span> time) {
+    <span class="k">if</span> (radius &lt;= 0) <span class="k">return</span> Vec3.ZERO;
+    <span class="k">double</span> angle = phase + (periodTicks &gt; 0 ? Math.PI * 2 * time / periodTicks : 0);
+    <span class="k">double</span> along = radius * Math.sin(angle);
+    <span class="k">return new</span> Vec3(radius * Math.cos(angle), along * Math.sin(inclination), along * Math.cos(inclination));
+}</code></pre>
+  <figure class="fig">
+    <svg viewBox="0 0 640 260" role="img" aria-label="Orbit diagram: a circle of radius r around a centre; the planet sits at an angle equal to phase plus 2 pi times time over period.">
+      <circle cx="170" cy="130" r="95" fill="none" class="svg-orbit" stroke-width="2" stroke-dasharray="5 5"/>
+      <circle cx="170" cy="130" r="9" class="svg-star"/>
+      <line x1="170" y1="130" x2="252" y2="82" class="svg-line" stroke-width="2"/>
+      <circle cx="252" cy="82" r="11" class="svg-ink"/>
+      <path d="M210 130 A40 40 0 0 0 204 109" fill="none" class="svg-orbit" stroke-width="2"/>
+      <text class="svg-small" x="214" y="122">angle</text>
+      <text class="svg-small" x="200" y="98">r</text>
+      <line x1="170" y1="130" x2="275" y2="130" class="svg-line" stroke-dasharray="3 4"/>
+      <text class="svg-text" x="330" y="70">angle = phase + 2π · time ⁄ period</text>
+      <text class="svg-text" x="330" y="100">x = r · cos(angle)</text>
+      <text class="svg-text" x="330" y="128">z = r · sin(angle) · cos(tilt)</text>
+      <text class="svg-text" x="330" y="156">y = r · sin(angle) · sin(tilt)</text>
+      <text class="svg-small" x="330" y="190">tilt = the orbit's inclination: it lifts one</text>
+      <text class="svg-small" x="330" y="206">side of the circle and lowers the other.</text>
+    </svg>
+    <figcaption>One full turn takes <code>period</code> ticks. <code>phase</code> sets where on the circle the planet starts, so two planets with the same period aren't on top of each other.</figcaption>
+  </figure>
+  <h3>Moons orbit planets that orbit stars</h3>
+  <p>A moon names a <code>parent</code>. Its position is its parent's position plus its own orbit offset. The parent might itself have a parent, so the method calls itself. That's <strong>recursion</strong>:</p>
+<pre><code><span class="k">public</span> Vec3 bodyPosition(Body body, <span class="k">double</span> time) {
+    Vec3 centre = body.parent().map(byLocalId::get).map(p -&gt; bodyPosition(p, time)).orElse(position);
+    <span class="k">return</span> centre.add(body.orbit().offset(time));
+}</code></pre>
+  <h3>Which clock?</h3>
+  <p>Every player must agree where Mars is, so everyone must use the same clock. <code>Galaxy.time</code> uses the level's game time, which every dimension shares with the Overworld, and returns 0 if the server turned orbits off in its config:</p>
+<pre><code><span class="k">public static double</span> time(Level level, <span class="k">float</span> partialTick) {
+    <span class="k">return</span> DawnbreakConfig.serverOr(DawnbreakConfig.SERVER.orbitalMotion) ? level.getGameTime() + partialTick : 0;
+}</code></pre>
+  <p>The <code>partialTick</code> is a fraction between ticks. The renderer draws many frames per tick, and adding the fraction makes planets glide smoothly instead of jumping 20 times a second.</p>
+</section>
+
+<section id="procedural">
+  <h2><span class="n">04</span>An infinite galaxy from one number</h2>
+  <p class="files">galaxy/Galaxy.java · SystemGenerator.java · StarClass.java · NameGenerator.java</p>
+  <p>Hand-made systems are few. Everywhere else, systems are <strong>generated</strong>. The space dimension is cut into square <em>cells</em>, 8,192 blocks on a side, and each cell may hold one system.</p>
+  <figure class="fig">
+    <svg viewBox="0 0 640 250" role="img" aria-label="A grid of cells; most hold one star system near their centre, some are empty, and cells near a hand-made system are left empty.">
+      <g class="svg-line" stroke-width="1">
+        <path d="M20 20 H500 M20 70 H500 M20 120 H500 M20 170 H500 M20 220 H500"/>
+        <path d="M20 20 V220 M100 20 V220 M180 20 V220 M260 20 V220 M340 20 V220 M420 20 V220 M500 20 V220"/>
+      </g>
+      <g class="svg-star">
+        <circle cx="64" cy="42" r="5"/><circle cx="135" cy="48" r="4"/><circle cx="300" cy="40" r="6"/>
+        <circle cx="460" cy="50" r="4"/><circle cx="55" cy="98" r="4"/><circle cx="222" cy="92" r="5"/>
+        <circle cx="140" cy="148" r="5"/><circle cx="465" cy="142" r="6"/><circle cx="62" cy="196" r="4"/>
+        <circle cx="300" cy="198" r="4"/><circle cx="378" cy="192" r="5"/>
+      </g>
+      <circle cx="380" cy="95" r="9" class="svg-ink"/>
+      <circle cx="380" cy="95" r="44" fill="none" class="svg-orbit" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text class="svg-small" x="516" y="44">● procedural system</text>
+      <text class="svg-small" x="516" y="64">  (about 6 cells in 10)</text>
+      <text class="svg-small" x="516" y="98">● hand-made system:</text>
+      <text class="svg-small" x="516" y="114">  nearby cells are kept</text>
+      <text class="svg-small" x="516" y="130">  empty so they never</text>
+      <text class="svg-small" x="516" y="146">  overlap</text>
+      <text class="svg-small" x="516" y="190">one cell = 8,192 blocks</text>
+    </svg>
+  </figure>
+  <h3>Determinism: the same seed always gives the same galaxy</h3>
+  <p>The trick is a <strong>seeded random number generator</strong>. A random generator started from the same seed produces the same sequence of "random" numbers every time. So if the seed for a cell depends only on the galaxy seed and the cell's coordinates, everyone who generates that cell gets an identical system:</p>
+<pre><code><span class="k">public static</span> Optional&lt;StarSystem&gt; generate(<span class="k">long</span> galaxySeed, <span class="k">int</span> cx, <span class="k">int</span> cz) {
+    RandomSource r = RandomSource.create(mix(galaxySeed, cx, cz));
+    <span class="k">if</span> (r.nextFloat() &gt; DENSITY) <span class="k">return</span> Optional.empty();   <span class="c">// 40% of cells are empty</span>
+    …</code></pre>
+  <p><code>mix</code> scrambles three numbers into one. Neighbouring cells (5,7) and (5,8) must get completely unrelated seeds, not nearly equal ones. So it multiplies by large odd constants and folds the bits over themselves with XOR and shifts:</p>
+<pre><code><span class="k">static long</span> mix(<span class="k">long</span> seed, <span class="k">int</span> cx, <span class="k">int</span> cz) {
+    <span class="k">long</span> h = seed ^ (cx * 0x9E3779B97F4A7C15L) ^ (cz * 0xC2B2AE3D27D4EB4FL);
+    h ^= h &gt;&gt;&gt; 33;  h *= 0xFF51AFD7ED558CCDL;
+    h ^= h &gt;&gt;&gt; 33;  h *= 0xC4CEB9FE1A85EC53L;
+    <span class="k">return</span> h ^ (h &gt;&gt;&gt; 33);
+}</code></pre>
+  <h3>What the generator decides, in order</h3>
+  <ol class="steps">
+    <li><b>Position:</b> the middle of the cell, nudged up to 15% of a cell sideways, so systems don't sit on a perfect grid.</li>
+    <li><b>Stars:</b> one primary, picked by <em>weighted</em> chance. Red dwarfs (class M, weight 28) are common and blue giants (class O, weight 1) are rare, like the real galaxy. About 14% of systems get a companion star and 4% get two.</li>
+    <li><b>Habitable zone:</b> <code>700 + primaryRadius × 3.2</code> blocks out. Bigger, brighter stars push it further away.</li>
+    <li><b>Planets:</b> 1 to 6, walking outward. Each planet's type depends on its distance from the habitable zone: hot rock close in, earth-like worlds in the zone, gas and ice giants far out.</li>
+    <li><b>Orbit periods:</b> <code>20 × (orbit/1000)^1.5</code> minutes. That exponent is Kepler's third law: further planets are slower.</li>
+    <li><b>Moons:</b> giants get up to two; large rocky planets sometimes one.</li>
+    <li><b>Asteroid belt:</b> a 35% chance.</li>
+    <li><b>Names:</b> stitched from syllables ("Zarneth", "Kalix") by <code>NameGenerator</code>, using the same random generator, so names are deterministic too.</li>
+  </ol>
+  <h3>Generate on demand, remember a little</h3>
+  <p>The galaxy is effectively infinite, so it can't generate everything up front. <code>Galaxy.proceduralAt</code> generates a cell the first time anyone asks and keeps the result in a cache:</p>
+<pre><code><span class="k">private final</span> Map&lt;Long, Optional&lt;StarSystem&gt;&gt; cells = Collections.synchronizedMap(
+    <span class="k">new</span> LinkedHashMap&lt;&gt;(256, 0.75F, <span class="k">true</span>) {
+        <span class="k">protected boolean</span> removeEldestEntry(Map.Entry&lt;…&gt; eldest) { <span class="k">return</span> size() &gt; CACHE_SIZE; }
+    });
+
+<span class="k">public</span> Optional&lt;StarSystem&gt; proceduralAt(<span class="k">int</span> cx, <span class="k">int</span> cz) {
+    <span class="k">long</span> key = ((<span class="k">long</span>) cx &lt;&lt; 32) | (cz &amp; 0xFFFFFFFFL);
+    <span class="k">return</span> cells.computeIfAbsent(key, k -&gt; blockedByHandcrafted(cx, cz) ? Optional.empty() : SystemGenerator.generate(seed, cx, cz));
+}</code></pre>
+  <p>Three tricks in a few lines:</p>
+  <ul>
+    <li><b>A long as a map key.</b> Two 32-bit cell numbers are packed into one 64-bit number, which makes a cheap, unique key.</li>
+    <li><b>An LRU cache in one class.</b> A <code>LinkedHashMap</code> created with <code>true</code> keeps entries in order of last use. Overriding <code>removeEldestEntry</code> throws out the least recently used cell once there are more than 8,192. That's a complete "least recently used" cache.</li>
+    <li><b>Caching "nothing here".</b> Empty cells are stored as <code>Optional.empty()</code>, so an empty cell is only ever computed once too.</li>
+  </ul>
+  <p>Procedural systems still need ids so other code can point at them. The id encodes the cell: <code>dawnbreak:proc/12/-4</code>. To find the system for an id, <code>Galaxy.system</code> reads the two numbers back out and regenerates the cell. A planet's id is its system id plus a local name (<code>…/proc/12/-4/b2</code>), which <code>Galaxy.body</code> splits at the last slash.</p>
+</section>
+
+<section id="sync">
+  <h2><span class="n">05</span>Loading and syncing</h2>
+  <p class="files">galaxy/SystemLoader.java · Galaxies.java · network/SyncGalaxyPacket.java</p>
+  <p>Minecraft runs as two programs: the <strong>server</strong>, which owns the true state of the world, and the <strong>client</strong>, which draws it. In singleplayer both run in the same Java process, so there are two galaxies in memory at once. <code>Galaxies</code> keeps one per side:</p>
+<pre><code><span class="k">private static volatile</span> Galaxy server = Galaxy.EMPTY;
+<span class="k">private static volatile</span> Galaxy client = Galaxy.EMPTY;
+
+<span class="k">public static</span> Galaxy get(Level level) { <span class="k">return</span> get(level.isClientSide()); }</code></pre>
+  <p><code>volatile</code> means the field is always read fresh. The server thread and the render thread can both see the new galaxy the moment it's replaced.</p>
+  <h3>Reading the JSON files</h3>
+  <p><code>SystemLoader</code> is a <em>reload listener</em>. Minecraft calls it whenever data packs load, at startup or on <code>/reload</code>. It parses every file in <code>dawnbreak/systems/</code>, skips (and logs) broken ones, and rebuilds the server galaxy. It also keeps the raw JSON text, because that's what it will send to clients.</p>
+  <h3>What crosses the network</h3>
+  <p>When a player joins, the server sends one packet: a seed and the raw JSON of the hand-made systems. It does <em>not</em> send planets. The client parses the same JSON and builds its own <code>Galaxy</code> from the same seed:</p>
+<pre><code><span class="k">public void</span> handle(Supplier&lt;NetworkEvent.Context&gt; ctx) {
+    List&lt;StarSystem&gt; parsed = <span class="k">new</span> ArrayList&lt;&gt;();
+    systems.forEach((id, json) -&gt; SystemLoader.parse(id, json).ifPresent(parsed::add));
+    Galaxies.setClient(<span class="k">new</span> Galaxy(seed, parsed));
+}</code></pre>
+  <p>Because generation is deterministic, the client's procedural systems come out identical to the server's without a single planet being sent. A few kilobytes describe the whole galaxy.</p>
+  <div class="warn"><b>A weakness worth knowing.</b> The server doesn't send the world seed itself. It sends <code>mix(worldSeed, 0x6A1A, 0xC7)</code>, and a comment says this keeps the world seed private. But every step of <code>mix</code> can be undone: XOR with a known value, multiplying by an odd constant, and "XOR with yourself shifted right" are all reversible. A determined player could recover the world seed from the galaxy seed and use it to find structures. A one-way hash, such as SHA-256 of the seed, would fix this.</div>
+</section>
+
+<section id="planets">
+  <h2><span class="n">06</span>Planets as places</h2>
+  <p class="files">galaxy/Body.java · BodyType.java · GalaxyData.java · Bodies.java · network/CurrentBodyPacket.java</p>
+  <p>A planet you can land on needs a world to land <em>in</em>. There are two cases:</p>
+  <ul>
+    <li><b>Planets with their own dimension.</b> Vegeta, Elementia and the Moon each have one, named in their JSON with <code>"dimension"</code>.</li>
+    <li><b>Everything else</b>, including thousands of procedural planets. Making a dimension for each would be impossibly expensive. Instead, every planet of a type shares one <em>archetype world</em>: all desert planets land in <code>world_arid</code>, all ocean planets in <code>world_oceanic</code>, and so on.</li>
+  </ul>
+<pre><code><span class="c">/** Where you land: the body's own dimension, or its type's shared archetype world. */</span>
+<span class="k">public</span> Optional&lt;ResourceKey&lt;Level&gt;&gt; landingDimension() {
+    <span class="k">return</span> dimension.isPresent() ? dimension : type.archetypeDimension();
+}</code></pre>
+  <p>Gas giants return empty here, which is how the code says "you can't land on this".</p>
+  <h3>Sharing one world without meeting</h3>
+  <p>If every desert planet lands in the same world, why don't two of them overlap? Each planet is given its own <strong>slot</strong>: a 20,000-block square region of that world. <code>GalaxyData</code> hands out slots and saves them with the world, so a planet keeps its slot forever:</p>
+<pre><code><span class="k">public long</span> slotFor(Body body) {
+    Long existing = slotsByBody.get(key);
+    <span class="k">if</span> (existing != <span class="k">null</span>) <span class="k">return</span> existing;
+    <span class="c">// Pick a slot from a hash of the planet's id; if it's taken, walk to the next free one.</span>
+    …
+    <span class="k">while</span> (bodiesBySlot.containsKey(slot) || (sx == 0 &amp;&amp; sz == 0)) { … }
+    slotsByBody.put(key, slot);
+    bodiesBySlot.put(slot, key);
+    setDirty();   <span class="c">// tell Minecraft to save this</span>
+    <span class="k">return</span> slot;
+}</code></pre>
+  <p>It keeps <em>two</em> maps, planet→slot and slot→planet, so the question can be asked either way. Slot (0, 0) is never handed out, which keeps the area around each archetype world's spawn free. <code>SavedData</code> is Minecraft's built-in way to store a mod's own data inside the world save.</p>
+  <h3>"Which planet am I on?"</h3>
+  <p>Almost every rule needs this answer: gravity, air, travel. <code>Bodies.at</code> answers it:</p>
+<pre><code><span class="k">public static</span> Optional&lt;Body&gt; at(Level level, <span class="k">double</span> x, <span class="k">double</span> z) {
+    Optional&lt;Body&gt; fixed = galaxy.bodyForDimension(level.dimension());   <span class="c">// Vegeta? Elementia?</span>
+    <span class="k">if</span> (fixed.isPresent()) <span class="k">return</span> fixed;
+    <span class="k">if</span> (!ModDimensions.isArchetype(level.dimension())) <span class="k">return</span> Optional.empty();   <span class="c">// the Overworld etc.</span>
+    <span class="k">if</span> (level.isClientSide()) <span class="k">return</span> Optional.ofNullable(clientCurrent).flatMap(galaxy::body);
+    <span class="k">return</span> GalaxyData.get(server).bodyAt(x, z)…;   <span class="c">// which slot is this position in?</span>
+}</code></pre>
+  <p>The client doesn't have the saved slot table, so the server sends a small <code>CurrentBodyPacket</code> whenever your planet changes. <code>SpaceEvents.syncBody</code> remembers what it last sent each player and only sends again when the answer changes.</p>
+</section>
+
+<section id="transit">
+  <h2><span class="n">07</span>Travel between worlds</h2>
+  <p class="files">space/SpaceTransit.java · SpaceEvents.java</p>
+  <p>Every tick, for every player, <code>SpaceEvents.onPlayerTick</code> calls <code>SpaceTransit.tick</code>. That checks two situations:</p>
+  <figure class="fig">
+    <svg viewBox="0 0 660 230" role="img" aria-label="On a planet, rising above the build limit plus a margin breaks orbit into space next to the planet. In space, flying into a landable planet's atmosphere enters it; a gas giant pushes you back out; flying too close to a star burns you.">
+      <rect class="svg-box" x="20" y="70" width="170" height="80" rx="10"/>
+      <text class="svg-text" x="40" y="104">On a planet</text>
+      <text class="svg-small" x="40" y="124">any landable world</text>
+      <rect class="svg-box" x="440" y="70" width="190" height="80" rx="10"/>
+      <text class="svg-text" x="460" y="104">In space</text>
+      <text class="svg-small" x="460" y="124">dawnbreak:space</text>
+      <path d="M190 92 C 290 40, 350 40, 436 92" fill="none" class="svg-orbit" stroke-width="2"/>
+      <path d="M436 92 l-10 -1 5 -8z" class="svg-star"/>
+      <text class="svg-small" x="232" y="40">y ≥ build limit + margin</text>
+      <text class="svg-small" x="250" y="56">→ breakOrbit()</text>
+      <path d="M436 130 C 350 182, 290 182, 194 130" fill="none" class="svg-orbit" stroke-width="2"/>
+      <path d="M194 130 l10 0 -5 8z" class="svg-star"/>
+      <text class="svg-small" x="214" y="200">inside a landable planet's atmosphere</text>
+      <text class="svg-small" x="250" y="216">→ enterAtmosphere()</text>
+      <text class="svg-small" x="460" y="176">gas giant: pushed back</text>
+      <text class="svg-small" x="460" y="192">star: set on fire</text>
+    </svg>
+  </figure>
+  <h3>Leaving a planet</h3>
+  <p>Fly high enough (the build limit plus a configurable margin, 64 blocks by default) and <code>breakOrbit</code> runs. It works out where the planet is in space <em>right now</em> and puts you just outside its atmosphere, in the direction you're facing. It also writes down where you left from, in <code>rememberDeparture</code>.</p>
+  <h3>Landing</h3>
+  <p>In space, the code checks your distance to each planet. Inside an atmosphere, <code>enterAtmosphere</code> picks a landing spot in this order:</p>
+  <ol class="steps">
+    <li>where you last left this planet (the departure you wrote down), so you come back to your base;</li>
+    <li>else, for a planet with its own dimension, that world's spawn point;</li>
+    <li>else, the middle of the planet's slot in its archetype world.</li>
+  </ol>
+  <p>It drops you just above the build limit and gives you slow falling for the descent. The arrival height is deliberately <em>lower</em> than the exit height (<code>min(arrivalOffset, margin − 16)</code>). Otherwise you would arrive above the exit line and be thrown straight back into space.</p>
+  <h3>Three safety habits</h3>
+  <ul>
+    <li><b>A cooldown</b> after every trip (<code>TAG_COOLDOWN</code>), so you can't bounce between worlds every tick.</li>
+    <li><b>Teleports are queued, not done on the spot.</b> <code>schedule</code> puts the trip in a <code>PENDING</code> queue, run at the end of the server tick. Moving a player to another dimension while the game is still looping over that world's players can break the loop. Doing it afterwards is always safe.</li>
+    <li><b>Cheap checks.</b> Checking every system in the galaxy every tick would be slow. Once a second the code lists the systems close enough to matter (<code>NEARBY</code>), and on the other 19 ticks it checks only those.</li>
+  </ul>
+  <p>Ships use the same rules through <code>tickCraft</code>, with one extra problem. When a vehicle changes dimension, Minecraft throws its passengers off. So <code>moveCraft</code> moves the ship and each passenger separately, then seats everyone again five ticks later (<code>REMOUNTS</code>), once their game has received the ship.</p>
+</section>
+
+<section id="physics">
+  <h2><span class="n">08</span>Gravity, air and flight</h2>
+  <p class="files">space/gravity/GravityHandler.java · space/VacuumHandler.java · SpaceSurvivalEvent.java · client/SpaceFlightControls.java</p>
+  <h3>Gravity through attributes</h3>
+  <p>Minecraft entities have <strong>attributes</strong>: numbers such as max health or movement speed, which other code adjusts with <em>modifiers</em>. Forge adds one called <code>entity_gravity</code>. To give a planet 2× gravity, the code adds a modifier that multiplies it:</p>
+<pre><code><span class="k">double</span> gravity = multiplier(entity);   <span class="c">// e.g. 2.0 on Vegeta, from Bodies.at(...)</span>
+setModifier(entity.getAttribute(ForgeMod.ENTITY_GRAVITY.get()), GRAVITY_ID, <span class="k">"Dawnbreak gravity"</span>, gravity - 1.0);</code></pre>
+  <p>Why <code>gravity − 1.0</code>? The <code>MULTIPLY_TOTAL</code> operation multiplies the value by <em>(1 + amount)</em>, so an amount of 1.0 doubles it. The fixed UUID means the code can find and replace its own modifier later instead of stacking a new one each time. Attributes also sync to the client automatically, and that matters: movement is calculated on the player's own computer, so the client must feel the gravity too. Heavy gravity also adds a speed penalty that grows with the <em>logarithm</em> of gravity: −25% at 10×, −50% at 100×.</p>
+  <h3>Running out of air</h3>
+  <p>The air bar is vanilla's underwater air. But vanilla refills it every tick you aren't underwater, so simply lowering it wouldn't work. <code>VacuumHandler</code> keeps its own count in the player's saved data, lowers that, and writes it over vanilla's value at the end of each tick:</p>
+<pre><code><span class="k">int</span> oxygen = data.contains(TAG_OXYGEN) ? data.getInt(TAG_OXYGEN) : player.getAirSupply();
+<span class="k">if</span> (player.level().getGameTime() % interval == 0) oxygen--;
+<span class="k">if</span> (oxygen &lt;= -20) { oxygen = 0; player.hurt(player.damageSources().drown(), 2.0F); }
+player.setAirSupply(oxygen);   <span class="c">// overwrite vanilla's refill</span></code></pre>
+  <p>Before draining anything, <code>exposed()</code> asks whether you're actually in danger: creative mode, sitting in a spacecraft, or wearing a Capsule Breather all protect you. Last, it <em>posts an event</em>, <code>SpaceSurvivalEvent</code>. Any other mod can listen and cancel it to say "this player can breathe". That's how DMZ races or other mods' space suits can plug in without Dawnbreak knowing about them. Posting an event like this is called an <strong>extension point</strong>.</p>
+  <h3>Flying</h3>
+  <p><code>SpaceFlightControls</code> runs only on the client, because player movement is client-authoritative: your own game moves you and tells the server. Hold Sprint and Forward and a "cruise" speed builds up. Each tick the code tops up your velocity along where you're looking:</p>
+<pre><code><span class="k">double</span> along = velocity.dot(look);   <span class="c">// how fast you're already going that way</span>
+<span class="k">if</span> (along &lt; cruise) player.setDeltaMovement(velocity.add(look.scale(cruise - along)));</code></pre>
+  <p>The dot product measures how much of your current velocity already points where you look. Only the shortfall is added, so turning feels smooth instead of snapping.</p>
+</section>
+
+<section id="rendering">
+  <h2><span class="n">09</span>Drawing the sky</h2>
+  <p class="files">client/SpaceSkyEffects.java · client/render/SpaceRenderer.java · FarField.java · Meshes.java · texture/* · assets/dawnbreak/shaders/core/*</p>
+  <p>Minecraft lets a dimension replace its sky drawing. <code>SpaceSkyEffects.renderSky</code> hands the whole job to <code>SpaceRenderer.render</code>, which draws, back to front:</p>
+  <ol class="steps">
+    <li>a nebula backdrop and thousands of faint background stars;</li>
+    <li>the <b>far field</b>: a dot for every star system within range, plus asteroid belts and orbit lines;</li>
+    <li>the systems you're in or near, in full: textured, lit, spinning planets with clouds, rings and atmospheres.</li>
+  </ol>
+  <p>The same renderer draws the sky when you stand on a planet. Then the <em>viewpoint</em> is set to that planet's position in space, just above its surface, so the sky shows exactly what you'd see from there, including the other planets.</p>
+  <h3>The big problem: space is too big to draw</h3>
+  <p>A graphics card only draws things between a near and a far limit. Minecraft's far limit is a few hundred blocks, but a neighbouring planet might be 3,000 blocks away and a star 50,000. The fix is clever. Each object is drawn at a <em>fake, compressed</em> distance, and also <em>shrunk by the same factor</em>:</p>
+<pre><code><span class="c">/** Compressed draw distance: monotonic, so depth order survives, and always inside the far plane. */</span>
+<span class="k">private static double</span> skyDistance(<span class="k">double</span> dist) {
+    <span class="k">return</span> 10 + 8 * Math.log1p(dist / 20);
+}
+…
+<span class="k">double</span> k = skyDistance(dist) / dist;
+shader.safeGetUniform(<span class="k">"BodyCenter"</span>).set(rel.x * k, rel.y * k, rel.z * k);
+shader.safeGetUniform(<span class="k">"BodyScale"</span>).set(radius * k);</code></pre>
+  <figure class="fig">
+    <svg viewBox="0 0 640 230" role="img" aria-label="Chart of compressed sky distance against true distance: it rises steeply at first then flattens, staying under 80 even for objects 100,000 blocks away.">
+      <line x1="60" y1="190" x2="600" y2="190" class="svg-line" stroke-width="1.5"/>
+      <line x1="60" y1="190" x2="60" y2="20" class="svg-line" stroke-width="1.5"/>
+      <g class="svg-small">
+        <text x="56" y="208" text-anchor="middle">0</text>
+        <text x="168" y="208" text-anchor="middle">20k</text>
+        <text x="276" y="208" text-anchor="middle">40k</text>
+        <text x="384" y="208" text-anchor="middle">60k</text>
+        <text x="492" y="208" text-anchor="middle">80k</text>
+        <text x="600" y="208" text-anchor="middle">100k</text>
+        <text x="50" y="194" text-anchor="end">0</text>
+        <text x="50" y="130" text-anchor="end">40</text>
+        <text x="50" y="66" text-anchor="end">80</text>
+        <text x="330" y="226" text-anchor="middle">true distance (blocks)</text>
+      </g>
+      <g class="svg-line" stroke-dasharray="2 4"><line x1="60" y1="126" x2="600" y2="126"/><line x1="60" y1="62" x2="600" y2="62"/></g>
+      <path d="M60.0 174.0 L62.7 132.3 L65.4 123.7 L70.8 114.9 L76.2 109.8 L87.0 103.3 L114.0 94.4 L168.0 85.6 L276.0 76.7 L384.0 71.5 L492.0 67.8 L600.0 65.0" fill="none" class="svg-orbit" stroke-width="2.5"/>
+      <circle cx="76.2" cy="109.8" r="4" class="svg-star"/>
+      <text class="svg-small" x="74" y="56">a planet 3,000 blocks away</text>
+      <text class="svg-small" x="74" y="70">is drawn about 50 units away</text>
+      <line x1="90" y1="74" x2="78.2" y2="104.8" class="svg-line" stroke-width="1"/>
+      <text class="svg-small" x="600" y="54" text-anchor="end">≈ 78 units at 100,000 blocks</text>
+    </svg>
+    <figcaption>The compressed distance grows with the logarithm of the true distance, so everything fits inside the camera's range. Nearer things are still always drawn nearer, so they correctly cover farther ones.</figcaption>
+  </figure>
+  <p>Why does this look right? How big something appears depends only on <em>size ÷ distance</em>. Multiply both by the same factor <code>k</code> and the ratio doesn't change. A planet drawn 50 units away and shrunk to match looks exactly as big as the real thing 3,000 blocks away. The player can't tell the difference.</p>
+  <h3>Level of detail</h3>
+  <p>The renderer works out how many <em>pixels</em> each object covers on screen (<code>pixels()</code>), then chooses how much effort to spend:</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>On-screen size</th><th>What gets drawn</th></tr></thead>
+    <tbody>
+      <tr><td class="num">under 1.5 px</td><td>a glowing dot, brighter on its sunlit side (<code>lit</code>), never smaller than about 1.3 px, so every planet in a system can still be found</td></tr>
+      <tr><td class="num">1.5 – 20 px</td><td>the low-detail sphere mesh</td></tr>
+      <tr><td class="num">20 – 110 px</td><td>the medium sphere</td></tr>
+      <tr><td class="num">over 110 px</td><td>the detailed sphere; textures also switch to higher resolutions at 48 px and 200 px</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Drawing order</h3>
+  <p>Instead of drawing as it goes, the renderer collects <em>jobs</em> into three lists: solid bodies, see-through layers (clouds, rings) and atmosphere halos. It sorts each list from farthest to nearest and runs them in that order. This is the painter's algorithm: like painting a landscape, you paint the mountains before the tree in front of them. It matters most for see-through layers, which must be drawn after whatever is behind them.</p>
+  <h3>Shaders spin the planets</h3>
+  <p>The spinning and tilting happens on the graphics card, in <code>planet.vsh</code>. The mesh is a sphere of radius 1, so a point on it is also the direction straight out from the surface. Rotate it, scale it and move it into place:</p>
+<pre><code>vec3 p = rotateX(rotateY(Position, Spin), Tilt);   <span class="c">// spin about the axis, then tilt the axis</span>
+vec3 world = BodyCenter + p * BodyScale;          <span class="c">// the compressed position and size from above</span>
+gl_Position = ProjMat * ModelViewMat * vec4(world, 1.0);</code></pre>
+  <h3>Doing heavy work off the main thread</h3>
+  <p>Two jobs are too slow to do while drawing a frame:</p>
+  <ul>
+    <li><b>The far field.</b> Thousands of star dots, belts and orbit lines. <code>FarField</code> builds them on a worker thread whenever you cross into a new galaxy cell, uploads them to the graphics card once, and reuses them every frame. The distance compression is done per vertex in the shader, against the live camera, so the dots stay accurate while you fly and nothing needs rebuilding.</li>
+    <li><b>Planet textures.</b> Every planet's surface is painted from noise in code; there are no texture files. <code>SpaceTextures</code> generates them in the background in three resolutions, and the renderer uses a flat colour until they're ready.</li>
+  </ul>
+</section>
+
+<section id="asteroids">
+  <h2><span class="n">10</span>Asteroids</h2>
+  <p class="files">world/AsteroidFeature.java · AsteroidConfiguration.java · worldgen/biome/deep_space.json</p>
+  <p>Asteroids are the only real blocks in space. They're a <strong>feature</strong>, Minecraft's name for anything placed during world generation (trees, ores, boulders). The <code>deep_space</code> biome lists three: plain asteroids, ore-rich ones, and belt asteroids.</p>
+  <p>Placement uses the galaxy model again. A belt asteroid only appears if this spot is within an asteroid belt's ring, and it's then moved to the belt's height. A plain asteroid is mostly skipped inside a system (80% of the time), so orbits stay clear:</p>
+<pre><code><span class="k">if</span> (belt) {
+    <span class="k">if</span> (inside a belt ring) <span class="k">return new</span> BlockPos(x, beltHeight ± 45, z);
+} <span class="k">else if</span> (dist &lt; system.extent() &amp;&amp; random.nextFloat() &gt; 0.2F) {
+    <span class="k">return null</span>;   <span class="c">// keep systems mostly clear</span>
+}</code></pre>
+  <p>The rock itself is a squashed sphere: each axis gets its own random radius. Its edge is made lumpy by adding three sine waves at random offsets. Blocks near the surface become the <em>shell</em>; inside, a random roll decides between <em>core</em> stone and <em>ore</em>. The radius is capped at 10 blocks for a practical reason. A feature may only write to the 3×3 chunks around where it starts, and a bigger rock would break that rule.</p>
+</section>
+
+<section id="recap">
+  <h2><span class="n">11</span>Recap and exercises</h2>
+  <p>The design ideas, in one list:</p>
+  <ul>
+    <li><b>Compute, don't store.</b> Positions are functions of time, and procedural systems are functions of a seed.</li>
+    <li><b>Determinism replaces networking.</b> Same seed, same code, same galaxy on every computer.</li>
+    <li><b>Convert units at the border.</b> Humans write degrees and minutes; code thinks in radians and ticks.</li>
+    <li><b>Share expensive things.</b> Archetype worlds give thousands of planets five dimensions, split into saved slots.</li>
+    <li><b>Be careful about timing.</b> Queue teleports until the tick ends, and re-seat passengers a few ticks later.</li>
+    <li><b>Spend effort where it's visible.</b> Level of detail, a cached far field and background texture generation.</li>
+    <li><b>Leave doors open.</b> <code>SpaceSurvivalEvent</code> lets other mods change the rules without editing this code.</li>
+  </ul>
+  <h3>Try these</h3>
+  <ol class="ex">
+    <li>Write a new system JSON with one star and a moon that orbits a moon. Which method makes the second moon work without any new code? (Lesson 03.)</li>
+    <li>Two players far apart both look at cell (40, −12). Explain, step by step, why they see the same system. What would break if <code>SystemGenerator</code> called <code>Math.random()</code> instead of <code>r.nextFloat()</code>?</li>
+    <li>Set <code>arrivalHeightOffset</code> higher than <code>orbitExitMargin</code> in your head. What happens to a player who enters an atmosphere? Find the line in <code>enterAtmosphere</code> that prevents it.</li>
+    <li>Using <code>skyDistance</code>, work out how far away a star 10,000 blocks off is drawn, and what factor its radius is multiplied by. (Answer: about 59.7 units, so it's scaled by about 0.006.)</li>
+    <li>Fix the weakness from lesson 05: make the galaxy seed impossible to turn back into the world seed, without changing how procedural systems are generated from it.</li>
+  </ol>
+</section>
+</main>
+</div>
+</body>
+</html>
